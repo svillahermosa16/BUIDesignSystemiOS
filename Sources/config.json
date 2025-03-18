@@ -1,0 +1,31 @@
+{
+  "source": ["tokens/**/*.json"],
+  "platforms": {
+    "ios-swift-separate-enums": {
+      "transformGroup": "ios-swift-separate",
+      "buildPath": "Sources/DesignSystem/",
+      "files": [
+        {
+          "destination": "StyleDictionaryColor.swift",
+          "format": "ios-swift/enum.swift",
+          "options": {
+            "className": "StyleDictionaryColor"
+          },
+          "filter": {
+            "$type": "color"
+          }
+        },
+        {
+          "destination": "StyleDictionarySize.swift",
+          "format": "ios-swift/enum.swift",
+          "options": {
+            "className": "StyleDictionarySize"
+          },
+          "filter": {
+            "$type": "dimension"
+          }
+        }
+      ]
+    }
+  }
+}
