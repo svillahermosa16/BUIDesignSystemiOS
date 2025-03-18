@@ -279,6 +279,7 @@ const isColorWithoutLinearGradient = {
 
 StyleDictionary.registerFilter(isBorderOrRadius);
 StyleDictionary.registerFilter(isSpacingOrSizing);
+StyleDictionary.registerFormat(isColorWithoutLinearGradient);
 
 // Configure Style Dictionary
 const myStyleDictionary = new StyleDictionary({
@@ -306,13 +307,13 @@ const myStyleDictionary = new StyleDictionary({
             },
             {
                 "destination": "MBDesignSystemColor.swift",
-                "format": "ios-swift/class.swift",
+                "format": "ios-swift/struct.swift",
                 "options": {
                   "className": "StyleDictionaryColor"
                 },
                 "filter": {
-                  "type": "color"
-                }                
+                  "type": "isColorWithoutLinearGradient"
+                }
             },
             {
                 "destination": "MBDesignSystemBorders.swift",
