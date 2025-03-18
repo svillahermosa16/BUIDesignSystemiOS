@@ -1,0 +1,64 @@
+name: Generar Tokens con Style Dictionary
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'Sources/build.js'
+      - 'Sources/ComplexTokens/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Permiso para escribir contenido en el repositorio
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Lista de archivos en la raíz después del checkout
+        run: ls -al
+
+      - name: Lista de archivos en el directorio Sources
+        run: ls -al Sources
+
+      - name: Verificar existencia de build.js en Sources
+        run: test -f Sources/build.js && echo "Sources/build.js existe" || echo "Sources/build.js no existe"
+
+      - name: Mostrar contenido de Sources/build.js
+        run: cat Sources/build.js
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install style-dictionary
+
+      - name: Cambiar al directorio Sources
+        working-directory: Sources
+        run: pwd
+
+      - name: Ejecutar Style Dictionary
+        working-directory: Sources
+        run: npx style-dictionary build -c build.js
+
+      - name: Lista de archivos generados en BUIDesignSystemiOS
+        run: ls -al Sources/BUIDesignSystemiOS
+
+      - name: Añadir cambios generados
+        run: git add Sources/**
+
+      - name: Subir cambios generados
+        uses: stefanzweifel/git-auto-commit-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        with:
+          commit_message: "Actualizar tokens generados con Style Dictionary"
+          branch: develop
+          file_pattern: "Sources/**"
