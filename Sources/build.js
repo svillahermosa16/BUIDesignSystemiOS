@@ -14,20 +14,18 @@ StyleDictionary.registerTransform({
   type: 'value',
   transitive: 'true',
   transform: function(prop) {
-      // Skip non-typography tokens
+      
       const index = prop.path.indexOf('typography');
       if (index === -1) {
         return prop.value;
       }
       
-    // Extract font properties with fallbacks
     const fontValue = prop.original.value || {};
     const fontFamily = fontValue.fontFamily || "SystemFont";
     const fontSize = fontValue.fontSize || "16.0";
     const fontWeight = fontValue.fontWeight || "regular";
     const lineHeight = fontValue.lineHeight || null;
     
-    // Map weights to Swift UIFont.Weight values
     const weightMap = {
       '100': "ultraLight",
       '200': "thin",
@@ -45,10 +43,9 @@ StyleDictionary.registerTransform({
     
     const swiftWeight = weightMap[fontWeight] || "regular";
     
-    // Generate UIFont code
-    let uiFontString = `UIFont(name: "${fontFamily}", size: ${fontSize})!.withWeight(.${swiftWeight})`;
+      let uiFontString = `UIFont(name: "${fontFamily}", size: ${fontSize})`
+          + `!.withWeight(.${swiftWeight})`;
     
-    // Add line height if available
     if (lineHeight) {
       uiFontString = `${uiFontString}.withLineHeight(${lineHeight})`;
     }
@@ -56,6 +53,7 @@ StyleDictionary.registerTransform({
     return uiFontString;
   }
 });
+
 StyleDictionary.registerFormat({
   name: 'ios/swift/uifonts',
   format: function({dictionary}) {
@@ -73,7 +71,6 @@ StyleDictionary.registerFormat({
         output.push(`  public static let ${name} = ${token.value}`);
       });
     
-    // Add extension for withWeight and withLineHeight helpers
     output.push('}');
     output.push('');
     output.push('// UIFont extensions for weight and line height');
@@ -102,22 +99,19 @@ StyleDictionary.registerTransform({
     transitive: true,
     transform: function(prop) {
   
-      // Correctly filter for border tokens based on type
       if (prop.type !== 'border') {
         return prop.value;
       }
   
-      // Extract border properties with fallbacks (use more generic fallbacks)
       const borderValue = prop.original.value || {};
-      const borderColor = borderValue.color || "color.black"; // Generic fallback
-      const borderWidth = borderValue.width || "border-width.thin"; // Generic fallback
-      const borderStyle = borderValue.style || "solid"; // Keep for now, but not directly usable in UIKit
+      const borderColor = borderValue.color || "color.black";
+      const borderWidth = borderValue.width || "border-width.thin";
+      const borderStyle = borderValue.style || "solid";
   
-      // Create a data structure to hold the extracted values
       const borderData = {
         color: borderColor,
         width: borderWidth,
-        style: borderStyle // Keep for now
+        style: borderStyle
       };
   
       return borderData;
@@ -144,7 +138,6 @@ StyleDictionary.registerFormat({
         .forEach(token => {
           const name = token.path.join('_').replace(/-/g, '_');
   
-          // Access the transformed values from the token
           const borderColorTokenName = token.value.color;
           const borderWidthTokenName = token.value.width;
   
@@ -202,10 +195,8 @@ StyleDictionary.registerTransform({
     
 
     let boxShadowValue = prop.value || {};
-    console.log(`Raw VALUE: ${JSON.stringify(boxShadowValue)}`);
 
     if (typeof boxShadowValue === 'string' && boxShadowValue.startsWith('BoxShadow')) {
-      console.log(`Already formatted BoxShadow detected: ${boxShadowValue}`);
       return boxShadowValue;
     }
     
@@ -217,7 +208,13 @@ StyleDictionary.registerTransform({
     const type = boxShadowValue.type || "";
 
     
-    const boxShadowData = 'BoxShadow(offsetX: CGFloat(' + offsetX + '), offsetY: CGFloat(' + offsetY + '), blurRadius: CGFloat(' + blurRadius + '), spread: CGFloat(' + spread + '), color: ' + createUIColorFromRGBA(color) + ', type: "' + type + '")';
+      const boxShadowData = 'BoxShadow(color: ' + createUIColorFromRGBA(color) +
+        ', offsetX: CGFloat(' + offsetX +
+        '), offsetY: CGFloat(' + offsetY +
+        '), blurRadius: CGFloat(' + blurRadius +
+        '), spread: CGFloat(' + spread +
+        '), type: "' + type + '")';
+
     return boxShadowData;
   }
 });
@@ -321,45 +318,45 @@ const myStyleDictionary = new StyleDictionary({
       "buildPath": "BUIDesignSystemiOS/ios-swift/",
       "files": [
             {
-            "destination": "MBDesignSystemFonts.swift",
+            "destination": "BUIDesignSystemiOSFonts.swift",
             "format": "ios/swift/uifonts",
             "filter": {
                 "type": "typography"
                 }
             },
             {
-                "destination": "MBDesignSystemColor.swift",
+                "destination": "BUIDesignSystemiOSColor.swift",
                 "format": "ios/swift/BUIColors",
                 "filter": "isColorWithoutLinearGradient"
             },
             {
-                "destination": "MBDesignSystemBorders.swift",
+                "destination": "BUIDesignSystemiOSBorders.swift",
                 "format": "ios/swift/borderValues",
                 "filter": 'isBorderOrRadius'
             },
             {
-                "destination": "MBDesignSystemSpacing&Sizing.swift",
+                "destination": "BUIDesignSystemiOSSpacing&Sizing.swift",
                 "format": "ios-swift/enum.swift",
                 "filter": 'isSpacingOrSizing',
                 "options": {
-                  "className": "MBDesignSystemSpacingSizing"
+                  "className": "BUIDesignSystemiOSSpacingSizing"
                 }
             },
             {
-                "destination": "MBDesignSystemShadows.swift",
+                "destination": "BUIDesignSystemiOSShadows.swift",
                 "format": "ios/swift/shadow",
                 "filter": {
                     "type": "boxShadow"
                 }
             },
             {
-                "destination": "MBDesignSystemOpacity.swift",
+                "destination": "BUIDesignSystemiOSOpacity.swift",
                 "format": "ios-swift/enum.swift",
                 "filter": {
                     "type": "opacity"
                 },
                 "options": {
-                  "className": "MBDesignSystemOpacity"
+                  "className": "BUIDesignSystemiOSOpacity"
                 }
             }
         ]
