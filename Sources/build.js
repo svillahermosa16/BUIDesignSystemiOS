@@ -330,9 +330,7 @@ const myStyleDictionary = new StyleDictionary({
             {
                 "destination": "MBDesignSystemColor.swift",
                 "format": "ios/swift/BUIColors",
-                "filter": {
-                  "type": "isColorWithoutLinearGradient"
-                }
+                "filter": "isColorWithoutLinearGradient"
             },
             {
                 "destination": "MBDesignSystemBorders.swift",
