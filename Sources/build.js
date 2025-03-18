@@ -279,7 +279,6 @@ const isColorWithoutLinearGradient = {
 
 StyleDictionary.registerFilter(isBorderOrRadius);
 StyleDictionary.registerFilter(isSpacingOrSizing);
-StyleDictionary.registerFilter(isColorWithoutLinearGradient);
 
 // Configure Style Dictionary
 const myStyleDictionary = new StyleDictionary({
@@ -312,7 +311,7 @@ const myStyleDictionary = new StyleDictionary({
                   "className": "StyleDictionaryColor"
                 },
                 "filter": {
-                  "type": "isColorWithoutLinearGradient"
+                  "type": "color"
                 }                
             },
             {
