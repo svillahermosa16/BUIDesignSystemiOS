@@ -296,7 +296,7 @@ const myStyleDictionary = new StyleDictionary({
         "size/rem",
         "color/css"
       ],
-      "buildPath": "Sources/DesignSystem/ios-swift/",
+      "buildPath": "BUIDesignSystemiOS/ios-swift/",
       "files": [
             {
             "destination": "MBDesignSystemFonts.swift",
@@ -307,7 +307,7 @@ const myStyleDictionary = new StyleDictionary({
             },
             {
                 "destination": "MBDesignSystemColor.swift",
-                "format": "ios-swift/enum.swift",
+                "format": "ios-swift/class.swift",
                 "options": {
                   "className": "StyleDictionaryColor"
                 },
