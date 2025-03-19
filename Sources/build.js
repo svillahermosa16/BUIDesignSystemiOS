@@ -232,7 +232,7 @@ StyleDictionary.registerFormat({
         '  let offsetY: CGFloat',
         '  let blurRadius: CGFloat',
         '  let spread: CGFloat',
-        '  let type: String? = nil',
+        '  let type: String',
         '}',
         '',
         'public struct BUIDesignSystemBoxShadow {',
