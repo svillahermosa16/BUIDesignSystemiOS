@@ -29,6 +29,7 @@ def create_xcassets(icons_dir, xcassets_dir):
         json.dump(contents, f, indent=2)
 
 if __name__ == "__main__":
-    icons_dir = "Sources/BUIDesignSystemiOSBuild/PNGIcons"
+    # Update this path to the correct sub-directory inside Sources
+    icons_dir = "Sources/BUIDesignSystemiOS/PNGIcons"
     xcassets_dir = "BUI-Icons.xcassets"
     create_xcassets(icons_dir, xcassets_dir)
