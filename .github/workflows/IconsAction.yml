@@ -29,7 +29,7 @@ jobs:
 
       - name: Run conversion script
         run: |
-          python Sources/create_xcassets.py
+          python Sources/buildAssets-script.py
 
       - name: Commit and push changes
         run: |
