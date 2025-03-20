@@ -34,7 +34,8 @@ jobs:
       - name: Run conversion script
         run: |
           set -x  # Enable debugging
-          python Sources/buildAssets-script.py
+          python Sources/buildAssets-script.py > script_output.log 2>&1
+          cat script_output.log
           set +x  # Disable debugging
 
       - name: List Sources directory contents after script execution
