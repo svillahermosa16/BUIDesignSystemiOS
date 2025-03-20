@@ -14,13 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: develop
-
+        uses: actions/checkout@v3
+       
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
 
@@ -32,12 +29,15 @@ jobs:
         run: |
           python Sources/buildAssets-script.py
 
-      - name: Commit and push changes
+      - name: Add Sources
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add BUI-Icons.xcassets
-          git commit -m 'Automated conversion of icons to xcassets'
-          git push
+          git add Sources/**
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        with:
+          commit_message: "Actualizar iconos "
+          branch: develop
+          file_pattern: "Sources/**"
