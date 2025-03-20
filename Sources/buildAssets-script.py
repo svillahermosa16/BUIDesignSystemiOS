@@ -30,5 +30,5 @@ def create_xcassets(icons_dir, xcassets_dir):
 
 if __name__ == "__main__":
     icons_dir = "icons"
-    xcassets_dir = "MyIcons.xcassets"
+    xcassets_dir = "BUI-Icons.xcassets"
     create_xcassets(icons_dir, xcassets_dir)
