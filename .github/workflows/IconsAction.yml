@@ -33,7 +33,9 @@ jobs:
 
       - name: Run conversion script
         run: |
+          set -x  # Enable debugging
           python Sources/buildAssets-script.py
+          set +x  # Disable debugging
 
       - name: List Sources directory contents after script execution
         run: ls -al Sources
