@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history to ensure we have the complete repository
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -28,42 +30,61 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-      - name: List current directory contents
-        run: ls -al
-
-      - name: List Sources directory contents before script execution
+      - name: Debug repository structure
         run: |
-          ls -al Sources
-          ls -al Sources/BUIDesignSystemiOS/PNGIcons || echo "PNGIcons directory not found"
+          echo "Current directory structure:"
+          find . -type d | sort
+          echo "PNGIcons directory content:"
+          find ./Sources -name "PNGIcons" -type d -exec ls -la {} \; || echo "PNGIcons directory not found"
 
       - name: Run conversion script
         id: run_script
         run: |
           echo "Running script as $(whoami) at $(date)"
-          echo "Script location: Sources/buildAssets-script.py"
+          echo "Current working directory: $(pwd)"
           
-          set -x  # Enable debugging
-          python Sources/buildAssets-script.py > script_output.log 2>&1
+          # Run with verbose output
+          python Sources/buildAssets-script.py
           SCRIPT_EXIT_CODE=$?
-          cat script_output.log
-          set +x  # Disable debugging
           
-          # Check for successful execution
+          # Debug results regardless of script exit code
+          echo "Script exit code: $SCRIPT_EXIT_CODE"
+          echo "Checking for xcassets:"
+          find . -name "*.xcassets" -type d || echo "No xcassets directories found"
+          
+          # List any xcassets content if it exists
+          for xcassets_dir in $(find . -name "*.xcassets" -type d); do
+            echo "Content of $xcassets_dir:"
+            find "$xcassets_dir" -type f | sort
+          done
+          
+          # Exit with the script's exit code
           if [ $SCRIPT_EXIT_CODE -ne 0 ]; then
-            echo "Script failed to execute successfully"
+            echo "Script failed"
             exit 1
           fi
 
-      - name: List directory contents after script execution
+      - name: Manual git operations if xcassets exists
         run: |
-          find . -name "*.xcassets" -type d | xargs ls -la
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update iOS app icons [skip ci]"
-          branch: develop
-          file_pattern: "**/*.xcassets/**"  # This pattern will match any .xcassets directories and their contents
-          commit_user_name: "GitHub Actions"
-          commit_user_email: "actions@github.com"
-          commit_author: "GitHub Actions <actions@github.com>"
+          # Check if xcassets directory exists
+          if [ -d "BUI-Icons.xcassets" ]; then
+            echo "Found BUI-Icons.xcassets directory, proceeding with git operations"
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            
+            git add BUI-Icons.xcassets/
+            
+            # Check if there are changes to commit
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            else
+              git commit -m "Update iOS app icons [skip ci]"
+              git push origin develop
+              echo "Changes pushed successfully"
+            fi
+          else
+            echo "BUI-Icons.xcassets directory not found"
+            echo "Current directories:"
+            find . -maxdepth 2 -type d
+            exit 1
+          fi
