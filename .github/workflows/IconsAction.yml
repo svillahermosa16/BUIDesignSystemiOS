@@ -8,48 +8,72 @@ on:
       - 'Sources/BUIDesignSystemiOS/PNGIcons/**'
   workflow_dispatch:
 
+permissions:
+  contents: write  # Required for committing changes back to the repository
+
 jobs:
   convert:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          # Add any other dependencies your script might need
 
       - name: List current directory contents
         run: ls -al
 
       - name: List Sources directory contents before script execution
-        run: ls -al Sources
+        run: |
+          ls -al Sources
+          ls -al Sources/BUIDesignSystemiOS/PNGIcons || echo "PNGIcons directory not found"
 
       - name: Run conversion script
+        id: run_script
         run: |
+          echo "Running script as $(whoami) at $(date)"
+          echo "Script location: Sources/buildAssets-script.py"
+          
           set -x  # Enable debugging
           python Sources/buildAssets-script.py > script_output.log 2>&1
+          SCRIPT_EXIT_CODE=$?
           cat script_output.log
           set +x  # Disable debugging
+          
+          # Check for successful execution
+          if [ $SCRIPT_EXIT_CODE -ne 0 ]; then
+            echo "Script failed to execute successfully"
+            exit 1
+          fi
 
       - name: List Sources directory contents after script execution
-        run: ls -al Sources
+        run: |
+          ls -al Sources
+          find . -type d -name "*.xcassets" -exec ls -la {} \; || echo "No xcassets directories found"
 
       - name: Add Sources
         run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
           git add Sources/**
+          git add *.xcassets || echo "No xcassets to add"
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         with:
-          commit_message: "Actualizar iconos "
+          commit_message: "Update iOS app icons [skip ci]"
           branch: develop
-          file_pattern: "Sources/**"
+          file_pattern: "Sources/** *.xcassets"
+          commit_user_name: "GitHub Actions"
+          commit_user_email: "actions@github.com"
+          commit_author: "GitHub Actions <actions@github.com>"
+          # Using default GITHUB_TOKEN for better security
