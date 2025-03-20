@@ -5,7 +5,7 @@ on:
     branches:
       - develop
     paths:
-      - 'icons/**'
+      - 'Sources/BUIDesignSystemiOS/PNGIcons/**'
   workflow_dispatch:
 
 jobs:
@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: develop
 
       - name: Set up Python
@@ -29,7 +30,7 @@ jobs:
 
       - name: Run conversion script
         run: |
-          python Sources/buildAssets-script.py
+          python Sources/create_xcassets.py
 
       - name: Commit and push changes
         run: |
