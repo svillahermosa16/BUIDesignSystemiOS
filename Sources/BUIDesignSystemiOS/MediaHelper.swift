@@ -9,6 +9,6 @@ import UIKit
 
 public struct MediaHelper {
     public static func imageFromPackage(named imageName: String) -> UIImage? {
-        return UIImage(named: imageName, in: .main, compatibleWith: nil)
+        return UIImage(named: imageName, in: .module, compatibleWith: nil)
     }
 }
